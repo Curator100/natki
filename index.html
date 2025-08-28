@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hand Made Haven</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary-color:#8B4513; --secondary-color:#D2691E; --background-color:#FFF5E6; --text-color:#4A4A4A; }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+    html,body{height:100%}
+    body{background:var(--background-color);color:var(--text-color);overflow-y:auto;scroll-behavior:smooth}
+
+    header{position:sticky;top:0;z-index:100;background:var(--primary-color);color:#fff;padding:12px 16px;text-align:center}
+    .logo h1{font-size:1.6rem;margin-bottom:4px;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
+    .logo p{font-size:.95rem;font-style:italic;opacity:.95}
+
+    .header-buttons{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .header-buttons button{padding:.5rem 1rem;border:none;border-radius:8px;background:#fff;color:var(--primary-color);cursor:pointer;font-weight:600}
+
+    .quick-jumps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+    .quick-jumps button{border:none;cursor:pointer;padding:.45rem .9rem;border-radius:999px;background:#fff;color:var(--primary-color);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+    .delivery-banner{background:var(--secondary-color);color:#fff;text-align:center;padding:14px;font-size:1rem}
+    .delivery-banner h2{font-size:1.3rem;margin-bottom:6px;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
+
+    main.reel{scroll-snap-type:y mandatory;height:100%}
+    .product-slide{position:relative;min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}
+    .product-frame{position:relative;width:100%;max-width:520px;aspect-ratio:9/16;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,.18);overflow:hidden;background:#fff}
+    .product-media{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#f7f7f7}
+    .product-media img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .product-overlay{position:absolute;left:0;right:0;bottom:0;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.25) 30%,rgba(0,0,0,.55) 100%);color:#fff}
+    .product-meta{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:10px 10px 0}
+    .product-name{font-size:1.05rem;font-weight:600;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+    .price-block{text-align:right}
+    .original-price{text-decoration:line-through;opacity:.8;font-size:.9rem}
+    .discounted-price{color:#fff;font-weight:700;font-size:1.15rem}
+    .overlay-actions{display:flex;gap:10px;padding:10px}
+    .overlay-actions button{flex:1;padding:.75rem 1rem;border:none;border-radius:10px;cursor:pointer;font-weight:700}
+    .btn-cart{background:var(--primary-color);color:#fff}
+    .btn-view{background:#fff;color:var(--primary-color)}
+
+    .cart-sidebar{position:fixed;right:-320px;top:0;width:320px;height:100vh;background:#fff;padding:1rem;box-shadow:-2px 0 5px rgba(0,0,0,.1);transition:right .3s ease;z-index:9999}
+    .cart-sidebar.active{right:0}
+    .cart-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:1rem;border-bottom:2px solid #eee;margin-bottom:1rem}
+    .close-cart{background:none;border:none;font-size:2rem;color:var(--primary-color);cursor:pointer;padding:0 10px}
+    .close-cart:hover{color:#ff4444}
+    .cart-item{display:flex;align-items:center;padding:10px;border-bottom:1px solid #eee;position:relative}
+    .cart-item img{width:50px;height:50px;object-fit:cover;margin-right:10px}
+    .delete-item{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#ff4444;font-size:1.2rem;cursor:pointer;padding:5px}
+
+    .popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:2rem;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,.2);z-index:10000;width:min(92vw,480px)}
+    .chat-window{display:none;position:fixed;bottom:90px;right:20px;width:350px;height:500px;background:#fff;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,.1);z-index:998}
+    .chat-window iframe{width:100%;height:100%;border-radius:10px}
+
+    .quantity-prompt{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;justify-content:center;align-items:center;z-index:11000}
+    .prompt-content{background:#fff;padding:2rem;border-radius:10px;text-align:center;width:min(92vw,420px)}
+    .prompt-content h3{margin-bottom:1rem;color:var(--primary-color)}
+    .prompt-content select{padding:.5rem;font-size:1.2rem;margin-bottom:1rem;width:100px}
+    .prompt-content input[type="tel"]{padding:.5rem;border:1px solid #ddd;border-radius:8px;width:100%;margin:.5rem 0}
+    .prompt-buttons{display:flex;gap:1rem;justify-content:center}
+    .prompt-buttons button{padding:.5rem 1rem;border:none;border-radius:5px;cursor:pointer;background:var(--primary-color);color:#fff}
+    .prompt-buttons button:last-child{background:#999}
+
+    .whatsapp-fab{position:fixed;right:16px;bottom:16px;width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 6px 16px rgba(0,0,0,.25);z-index:99999;text-decoration:none}
+    .whatsapp-fab svg{width:28px;height:28px}
+
+    @media (max-width:420px){
+      .product-overlay{padding-bottom:8px}
+      .overlay-actions button{padding:.65rem .9rem}
+      .product-name{font-size:1rem}
+      .discounted-price{font-size:1.05rem}
+      .chat-window{right:12px;bottom:84px;width:88vw}
+      .whatsapp-fab{right:12px;bottom:12px}
+    }
+  </style>
+</head>
+<body>
+  <div class="delivery-banner">
+    <h2>🎁 স্পেশাল অফার! 🎁</h2>
+    <p>৩ টির বেশি প্রোডাক্ট অর্ডার করলে ডেলিভারি চার্জ ফ্রি!</p>
+  </div>
+
+  <header>
+    <div class="logo">
+      <h1>Hand Made Haven</h1>
+      <p>Crafted with Love & Care</p>
+    </div>
+
+    <div class="header-buttons">
+      <button id="cartBtn" onclick="toggleCart()">Cart (<span id="cartCount">0</span>)</button>
+      <button id="chatBtn" onclick="toggleChat()">Now</button>
+    </div>
+
+    <div class="quick-jumps">
+      <button onclick="scrollToProduct(1)">দুইশ টাকার ডিল </button>
+      <button onclick="scrollToProduct(50)"> “ঝুলন্ত সৌন্দর্য”</button>
+      <button onclick="scrollToProduct(63)"> উলের জাদু</button>
+      <button onclick="scrollToProduct(30)">Discounted</button>
+    </div>
+  </header>
+
+  <main id="reel" class="reel"></main>
+
+  <div id="cartSidebar" class="cart-sidebar">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="close-cart" onclick="toggleCart()">×</button>
+    </div>
+    <div id="cartItems"></div>
+    <div class="cart-total" style="margin-top:12px;">
+      <h3>Subtotal: ৳<span id="cartSubtotal">0</span></h3>
+      <h3>Delivery: ৳<span id="deliveryCharge">70</span></h3>
+      <h3>Total: ৳<span id="cartTotal">0</span></h3>
+      <button onclick="showCheckoutForm()" style="margin-top:8px;width:100%;padding:.8rem;background:var(--primary-color);color:#fff;border:none;border-radius:10px;font-weight:700;">Buy Now</button>
+    </div>
+  </div>
+
+  <div id="discountPopup" class="popup">
+    <div class="popup-content">
+      <h2>Special Offer!</h2>
+      <p>✨ শুধুই আপনার জন্য ১০% ছাড় – পরবর্তী ৫ ঘণ্টার জন্য! ⏳</p>
+    </div>
+  </div>
+
+  <!-- 20s Lead Capture Popup (unchanged from last step) -->
+  <div id="leadPopup" class="popup" aria-modal="true" role="dialog">
+    <div class="popup-content" style="display:grid;gap:12px;">
+      <h2 style="color:var(--primary-color);">🎉 You received 10% discount!</h2>
+      <p>📱 ডিসকাউন্ট পেতে আপনার ফোন নাম্বার দিন!</p>
+      <form id="leadForm" onsubmit="submitLead(event)" style="display:grid;gap:10px;">
+        <input id="leadPhone" name="phone" type="tel" inputmode="tel" placeholder="e.g., 01609-349216" required>
+        <button type="submit" style="padding:.8rem;background:var(--primary-color);color:#fff;border:none;border-radius:8px;font-weight:700;"> ডিসকাউন্ট লাগবে </button>
+        <button type="button" onclick="closeLeadPopup()" style="padding:.6rem;background:#999;color:#fff;border:none;border-radius:8px;">ডিসকাউন্ট লাগবে না</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="checkoutForm" class="popup">
+    <div class="popup-content">
+      <h2>Checkout</h2>
+      <form id="orderForm" onsubmit="submitOrder(event)" style="display:grid;gap:10px;">
+        <input type="text" placeholder="নাম" required name="name">
+        <input type="text" placeholder="ঠিকানা" required name="address">
+        <input type="tel" placeholder="ফোন নম্বর" required name="phone">
+        <button type="submit" style="padding:.8rem;background:var(--primary-color);color:#fff;border:none;border-radius:8px;font-weight:700;">Place Order</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="chatWindow" class="chat-window">
+    <iframe src="chat.html" frameborder="0"></iframe>
+  </div>
+
+  <!-- Floating WhatsApp Button -->
+  <a class="whatsapp-fab" href="https://wa.me/8801609349216" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M19.11 17.24c-.31-.16-1.8-.89-2.08-.99-.28-.1-.49-.16-.71.16-.22.31-.82.99-1.01 1.19-.19.2-.37.22-.68.06-.31-.16-1.28-.47-2.44-1.49-.9-.8-1.51-1.79-1.69-2.1-.18-.31-.02-.47.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.2.05-.39-.03-.55-.08-.16-.71-1.72-.98-2.36-.26-.63-.53-.55-.71-.56l-.61-.01c-.2 0-.52.08-.79.39-.27.31-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.16.2 2.1 3.21 5.09 4.49.71.31 1.26.5 1.69.64.71.22 1.36.19 1.87.12.57-.09 1.8-.74 2.06-1.45.25-.71.25-1.32.17-1.45-.07-.13-.28-.2-.59-.35zM16.01 3.2c-7.09 0-12.83 5.74-12.83 12.82 0 2.26.59 4.38 1.62 6.22L3 29l6.94-2.17a12.752 12.752 0 0 0 6.07 1.55c7.08 0 12.82-5.74 12.82-12.82S23.09 3.2 16.01 3.2zm7.57 20.39a10.82 10.82 0 0 1-15.23 1.27l-.34-.26-4.12 1.29 1.35-4.02-.28-.36a10.82 10.82 0 1 1 18.62 2.08z" fill="currentColor"/>
+    </svg>
+  </a>
+
+  <script>
+    /* ---------- Config ---------- */
+    const TG_BOT = '7447671480:AAFtEWOh_y3k5UpIeUnV-5fJdV3L-RlqC6M';
+    const TG_CHAT = '906269717';
+
+    /* ---------- Products (unchanged pricing) ---------- */
+    const products = Array.from({ length: 83 }, (_, i) => {
+      let price; const id = i + 1;
+      switch(id){
+        case 1:price=99;break;case 2:price=199;break;case 3:price=99;break;case 4:price=99;break;case 5:price=99;break;case 6:price=99;break;
+        case 7:price=99;break;case 8:price=99;break;case 9:price=99;break;case 10:price=99;break;case 11:price=100;break;case 12:price=100;break;
+        case 13:price=100;break;case 14:price=100;break;case 15:price=100;break;case 16:price=350;break;case 17:price=350;break;case 18:price=300;break;
+        case 19:price=300;break;case 20:price=350;break;case 21:price=350;break;case 22:price=350;break;case 23:price=150;break;case 24:price=220;break;
+        case 25:price=400;break;case 26:price=800;break;case 27:price=200;break;case 28:price=180;break;case 29:price=100;break;case 30:price=180;break;
+        case 31:price=300;break;case 32:price=400;break;case 33:price=300;break;case 34:price=850;break;case 35:price=1250;break;case 36:price=1100;break;
+        case 37:price=300;break;case 38:price=300;break;case 39:price=300;break;case 40:price=300;break;case 41:price=250;break;case 42:price=300;break;
+        case 43:price=250;break;case 44:price=250;break;case 45:price=300;break;case 46:price=250;break;case 47:price=900;break;case 48:price=300;break;
+        case 49:price=300;break;case 50:price=250;break;case 51:price=1100;break;case 52:price=1000;break;case 53:price=1000;break;case 54:price=1200;break;
+        case 55:price=1000;break;case 56:price=1300;break;case 57:price=1000;break;case 58:price=600;break;case 59:price=1200;break;case 60:price=1200;break;
+        case 61:price=1200;break;case 62:price=1200;break;case 63:price=1600;break;case 64:price=4000;break;case 65:price=4000;break;case 66:price=5000;break;
+        case 67:price=5000;break;case 68:price=5000;break;case 69:price=5000;break;case 70:price=2500;break;case 71:price=2000;break;case 72:price=5000;break;
+        case 73:price=5000;break;case 74:price=5000;break;case 75:price=5000;break;case 76:price=5000;break;case 77:price=800;break;case 78:price=800;break;
+        case 79:price=800;break;case 80:price=800;break;case 81:price=1000;break;case 82:price=1700;break;case 83:price=800;break;
+      }
+      return { id, name:`Product ${id}`, price:price*1.1, originalPrice:price, image:`${id}.jpg` };
+    });
+
+    let cart = [];
+
+    /* ---------- Build vertical reel ---------- */
+    function initializeProducts(){
+      const reel=document.getElementById('reel'); reel.innerHTML='';
+      products.forEach(p=>{
+        const slide=document.createElement('section');
+        slide.className='product-slide'; slide.id=`product-${p.id}`;
+        slide.innerHTML=`
+          <div class="product-frame">
+            <div class="product-media"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>
+            <div class="product-overlay">
+              <div class="product-meta">
+                <div class="product-name">${p.name}</div>
+                <div class="price-block">
+                  <div class="original-price">৳${p.price.toFixed(2)}</div>
+                  <div class="discounted-price">৳${p.originalPrice.toFixed(2)}</div>
+                </div>
+              </div>
+              <div class="overlay-actions">
+                <button class="btn-cart" onclick="addToCart(${p.id})">অর্ডার করুন</button>
+                <button class="btn-view" onclick="toggleCart()">অর্ডার ফাইনাল করুন</button>
+              </div>
+            </div>
+          </div>`;
+        reel.appendChild(slide);
+      });
+    }
+
+    function scrollToProduct(n){ const el=document.getElementById(`product-${n}`); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+    /* ---------- Existing 15s discount popup ---------- */
+    setTimeout(()=>{ const pop=document.getElementById('discountPopup'); pop.style.display='block'; setTimeout(()=>{pop.style.display='none'},7000); },15000);
+
+    /* ---------- 20s lead popup ---------- */
+    let leadShown=false;
+    setTimeout(()=>{ if(!leadShown){ document.getElementById('leadPopup').style.display='block'; leadShown=true; document.getElementById('leadPhone').focus(); } },20000);
+    function closeLeadPopup(){ document.getElementById('leadPopup').style.display='none'; }
+
+    async function submitLead(e){
+      e.preventDefault();
+      const input=document.getElementById('leadPhone'); let phone=(input.value||'').trim().replace(/[\s-]/g,'');
+      if(!/^(\+?880|0)\d{9,10}$/.test(phone)){ alert('Please enter a valid Bangladeshi phone number.'); input.focus(); return; }
+      localStorage.setItem('userPhone', phone); // save for later so we don't ask again
+      const message=`New Discount Lead:\nPhone: ${phone}`;
+      try{
+        await fetch(`https://api.telegram.org/bot${TG_BOT}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:TG_CHAT,text:message})});
+        alert('Thanks! Your 10% discount is noted. We’ll contact you soon.');
+        closeLeadPopup(); input.value='';
+      }catch(e){ alert('Could not send your number. Please try again.'); }
+    }
+
+    /* ---------- Quantity prompt + first-time phone capture ---------- */
+    function addToCart(productId){
+      const hasPhone = !!localStorage.getItem('userPhone');
+      const quantityPrompt=document.createElement('div');
+      quantityPrompt.className='quantity-prompt';
+      quantityPrompt.innerHTML=`
+        <div class="prompt-content">
+          <h3>আপনি কয়টা প্রোডাক্ট কিনতে চান?</h3>
+          <select id="quantitySelect">
+            ${Array.from({length:20},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('')}
+          </select>
+          ${hasPhone ? '' : `
+            <div style="text-align:left;margin-top:8px">
+              <label for="inlinePhone" style="font-weight:600;display:block;margin-bottom:6px;color:var(--primary-color)">ফোন নাম্বার দিন (ডিসকাউন্ট/আপডেটের জন্য)</label>
+              <input id="inlinePhone" type="tel" inputmode="tel" placeholder="e.g., 01609-349216" required>
+            </div>
+          `}
+          <div class="prompt-buttons">
+            <button onclick="confirmQuantity(${productId})">ঠিক আছে</button>
+            <button onclick="closeQuantityPrompt()">বাতিল</button>
+          </div>
+        </div>`;
+      document.body.appendChild(quantityPrompt);
+      if(!hasPhone){ setTimeout(()=>{ const ip=document.getElementById('inlinePhone'); if(ip) ip.focus(); },50); }
+    }
+
+    function confirmQuantity(productId){
+      const qEl=document.getElementById('quantitySelect'); const quantity=parseInt(qEl.value,10);
+      if(!(quantity>0)){ return; }
+
+      // Save phone on first add
+      if(!localStorage.getItem('userPhone')){
+        const ip=document.getElementById('inlinePhone');
+        if(!ip){ alert('Phone input missing.'); return; }
+        let phone=(ip.value||'').trim().replace(/[\s-]/g,'');
+        if(!/^(\+?880|0)\d{9,10}$/.test(phone)){ alert('সঠিক ফোন নম্বর দিন'); ip.focus(); return; }
+        localStorage.setItem('userPhone', phone);
+        // Also notify Telegram that we captured a phone via inline prompt (optional)
+        const msg=`Lead (inline):\nPhone: ${phone}`;
+        fetch(`https://api.telegram.org/bot${TG_BOT}/sendMessage`,{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({chat_id:TG_CHAT,text:msg})
+        }).catch(()=>{});
+      }
+
+      const product=products.find(p=>p.id===productId);
+      cart.push({...product, quantity});
+      updateCart();
+      toggleCart(); // open for quick checkout
+      closeQuantityPrompt();
+    }
+
+    function closeQuantityPrompt(){ const prompt=document.querySelector('.quantity-prompt'); if(prompt) prompt.remove(); }
+    function removeFromCart(index){ cart.splice(index,1); updateCart(); }
+
+    function updateCart(){
+      const cartItems=document.getElementById('cartItems');
+      const cartCount=document.getElementById('cartCount');
+      const cartSubtotal=document.getElementById('cartSubtotal');
+      const deliveryCharge=document.getElementById('deliveryCharge');
+      const cartTotal=document.getElementById('cartTotal');
+
+      cartCount.textContent=cart.length;
+      cartItems.innerHTML='';
+      let subtotal=0,totalQuantity=0;
+
+      cart.forEach((item,index)=>{
+        const itemTotal=item.originalPrice*item.quantity;
+        subtotal+=itemTotal; totalQuantity+=item.quantity;
+        cartItems.innerHTML+=`
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div>
+              <h4>${item.name}</h4>
+              <p>Quantity: ${item.quantity}</p>
+              <p>৳${itemTotal.toFixed(2)}</p>
+            </div>
+            <button class="delete-item" onclick="removeFromCart(${index})">×</button>
+          </div>`;
+      });
+
+      const delivery = totalQuantity>=10 ? 0 : 70;
+      cartSubtotal.textContent=subtotal.toFixed(2);
+      deliveryCharge.textContent=delivery;
+      cartTotal.textContent=(subtotal+delivery).toFixed(2);
+
+      // Persist minimal cart in session for abandonment detection
+      sessionStorage.setItem('cartSnapshot', JSON.stringify(cart.map(({id,name,quantity})=>({id,name,quantity}))));
+    }
+
+    function toggleCart(){ document.getElementById('cartSidebar').classList.toggle('active'); }
+    function toggleChat(){ const w=document.getElementById('chatWindow'); const hidden=(w.style.display==='none'||!w.style.display); w.style.display=hidden?'block':'none'; }
+    function showCheckoutForm(){ document.getElementById('checkoutForm').style.display='block'; }
+
+    /* ---------- Submit order ---------- */
+    async function submitOrder(e){
+      e.preventDefault();
+      const form=e.target; const formData=new FormData(form);
+      const totalQuantity=cart.reduce((s,i)=>s+parseInt(i.quantity),0);
+      const deliveryCharge=totalQuantity>=10?0:70;
+
+      const orderDetails={
+        name:formData.get('name'),
+        address:formData.get('address'),
+        phone:formData.get('phone'),
+        items:cart.map(i=>`${i.name} x${i.quantity}`).join('\n'),
+        subtotal:document.getElementById('cartSubtotal').textContent,
+        delivery:deliveryCharge,
+        total:document.getElementById('cartTotal').textContent
+      };
+
+      // store phone as well so we don't ask again later
+      if(orderDetails.phone){ localStorage.setItem('userPhone', (''+orderDetails.phone).trim()); }
+
+      const message=`New Order:
+Name: ${orderDetails.name}
+Address: ${orderDetails.address}
+Phone: ${orderDetails.phone}
+Items:
+${orderDetails.items}
+Subtotal: ৳${orderDetails.subtotal}
+Delivery: ৳${orderDetails.delivery}
+Total: ৳${orderDetails.total}`;
+
+      try{
+        await fetch(`https://api.telegram.org/bot${TG_BOT}/sendMessage`,{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({chat_id:TG_CHAT,text:message})
+        });
+        alert('Order placed successfully!');
+        cart=[]; updateCart();
+        sessionStorage.setItem('orderPlaced','1'); // prevent abandonment ping
+        document.getElementById('checkoutForm').style.display='none';
+      }catch(err){
+        alert('Error placing order. Please try again.');
+      }
+    }
+
+    // Abandonment detection: send "cart only" if user leaves without buying
+    function sendAbandonment(){
+      try{
+        if(sessionStorage.getItem('orderPlaced')==='1') return; // already purchased
+        if(sessionStorage.getItem('cartAbandonedSent')==='1') return; // sent already
+        const cartSnap = JSON.parse(sessionStorage.getItem('cartSnapshot')||'[]');
+        if(!cartSnap.length) return;
+        const phone = localStorage.getItem('userPhone') || '(no phone captured)';
+        const text = `Cart Only (Abandoned):
+Phone: ${phone}
+Items:
+${cartSnap.map(i=>`${i.name} x${i.quantity}`).join('\n')}`;
+
+        const url = `https://api.telegram.org/bot${TG_BOT}/sendMessage`;
+        const payload = JSON.stringify({ chat_id: TG_CHAT, text });
+
+        // Try sendBeacon first
+        let sent=false;
+        if(navigator.sendBeacon){
+          const blob = new Blob([payload], { type: 'application/json' });
+          sent = navigator.sendBeacon(url, blob);
+        }
+        if(!sent){
+          // Fallback using keepalive fetch
+          fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:payload, keepalive:true }).catch(()=>{});
+        }
+        sessionStorage.setItem('cartAbandonedSent','1');
+      }catch(_e){}
+    }
+
+    window.addEventListener('pagehide', sendAbandonment);      // iOS/Safari friendly
+    window.addEventListener('beforeunload', sendAbandonment);  // others
+
+    // expose globals
+    window.scrollToProduct=scrollToProduct;
+    window.addToCart=addToCart;
+    window.confirmQuantity=confirmQuantity;
+    window.closeQuantityPrompt=closeQuantityPrompt;
+    window.toggleCart=toggleCart;
+    window.toggleChat=toggleChat;
+    window.showCheckoutForm=showCheckoutForm;
+    window.submitOrder=submitOrder;
+    window.submitLead=submitLead;
+    window.closeLeadPopup=closeLeadPopup;
+
+    // Init
+    initializeProducts();
+  </script>
+</body>
+</html>
